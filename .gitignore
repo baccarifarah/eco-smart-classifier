@@ -1,0 +1,12 @@
+.ipynb_checkpoints/
+__pycache__/
+*.pyc
+.DS_Store
+
+mlruns/
+models/
+*.pkl
+*.joblib
+
+data/eco-system.csv
+src/data_engineering/df_clean.csv

@@ -1,0 +1,5 @@
+outs:
+- md5: 6a6ed57f4912d6a5efd03eaa1650670d
+  size: 2193502
+  hash: md5
+  path: df_clean.csv
