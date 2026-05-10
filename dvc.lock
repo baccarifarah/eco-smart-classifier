@@ -1,0 +1,102 @@
+schema: '2.0'
+stages:
+  preprocess:
+    cmd: python src/data_engineering/preprocess.py
+    deps:
+    - path: data/eco-system.csv
+      hash: md5
+      md5: ebca3e2a097a475cee3af2c152e90164
+      size: 2586532
+    - path: src/data_engineering/preprocess.py
+      hash: md5
+      md5: 167db4571e2cf47102018a467ac5ca7d
+      size: 614
+    outs:
+    - path: data/processed/df_clean.csv
+      hash: md5
+      md5: 6763b63962d528286acceaa6008a223c
+      size: 2412763
+  train_numeric:
+    cmd: python src/modeling/train_numeric.py
+    deps:
+    - path: data/processed/df_clean.csv
+      hash: md5
+      md5: 6763b63962d528286acceaa6008a223c
+      size: 2412763
+    - path: src/modeling/train_numeric.py
+      hash: md5
+      md5: 74293393d818c33cd2ec3215d8afbd19
+      size: 2513
+    outs:
+    - path: models/numeric_model.pkl
+      hash: md5
+      md5: 2fbf03a485fd588772db7e1d20ca588a
+      size: 1461138
+  train_nlp:
+    cmd: python src/modeling/train_nlp.py
+    deps:
+    - path: data/processed/df_clean.csv
+      hash: md5
+      md5: 6763b63962d528286acceaa6008a223c
+      size: 2412763
+    - path: src/modeling/train_nlp.py
+      hash: md5
+      md5: e88f06c46f7be762717c1978c90b02e0
+      size: 3045
+    outs:
+    - path: models/nlp_model.pkl
+      hash: md5
+      md5: 4e2e30b10b45cc907d545b38437d3eab
+      size: 37992
+  train_multimodal:
+    cmd: python src/modeling/train_multimodal.py
+    deps:
+    - path: data/processed/df_clean.csv
+      hash: md5
+      md5: 6763b63962d528286acceaa6008a223c
+      size: 2412763
+    - path: src/modeling/train_multimodal.py
+      hash: md5
+      md5: 3d01673cbb3949cfd5a9da24845d1e3c
+      size: 3646
+    outs:
+    - path: models/multimodal_model.pkl
+      hash: md5
+      md5: a94d263771817eaddde3572d9f6dcc8b
+      size: 1418571
+  monitoring:
+    cmd: "python -m src.monitoring.monitoring\npython -m src.monitoring.text_drift\n"
+    deps:
+    - path: data/processed/df_clean.csv
+      hash: md5
+      md5: 6763b63962d528286acceaa6008a223c
+      size: 2412763
+    - path: logs/current_data.csv
+      hash: md5
+      md5: 30c0bcd00806b1c7b2e29bc4aa1960bf
+      size: 1833
+    - path: logs/current_nlp.csv
+      hash: md5
+      md5: 906cf4edb3a7dc3c177e76c73c35f7af
+      size: 410
+    - path: src/monitoring/monitoring.py
+      hash: md5
+      md5: 016cf1d13e16b4a1e7d4974eb68aa18f
+      size: 1813
+    - path: src/monitoring/text_drift.py
+      hash: md5
+      md5: 00116036268db2c749f22874d3aafc99
+      size: 1505
+    outs:
+    - path: reports/evidently/drift_metrics.json
+      hash: md5
+      md5: c416172108d8ccc6706672afb2388213
+      size: 25
+    - path: reports/evidently/text_drift.json
+      hash: md5
+      md5: 3e5c1eef4cd4b6eb603e9143aea984c3
+      size: 40
+    - path: reports/report.html
+      hash: md5
+      md5: 67f08eadff0171b29214051738aaf2d7
+      size: 3589786

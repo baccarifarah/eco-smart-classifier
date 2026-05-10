@@ -10,3 +10,35 @@ models/
 
 data/eco-system.csv
 src/data_engineering/df_clean.csv
+
+# Virtual env
+mlops311/
+venv/
+
+# Logs
+logs/
+
+# Reports
+reports/
+
+# MLflow
+mlruns/
+
+# Models
+models/*.pkl
+
+# DVC cache
+/data/
+/data/processed/
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Ignore datasets
+data/*
+data/processed/*
+
+# BUT KEEP DVC FILES
+!data/*.dvc
+!data/processed/*.dvc

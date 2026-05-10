@@ -1,0 +1,15 @@
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.ipynb_checkpoints/
+mlops311/
+mlruns/
+venv/
+.env
+.git/
+.dvc/cache/
+data
+mlruns
+__pycache__/
+*.pyc

@@ -1,0 +1,67 @@
+stages:
+
+  preprocess:
+
+    cmd: python src/data_engineering/preprocess.py
+
+    deps:
+      - src/data_engineering/preprocess.py
+      - data/eco-system.csv
+
+    outs:
+      - data/processed/df_clean.csv
+
+
+  train_numeric:
+
+    cmd: python src/modeling/train_numeric.py
+
+    deps:
+      - src/modeling/train_numeric.py
+      - data/processed/df_clean.csv
+
+    outs:
+      - models/numeric_model.pkl
+
+
+  train_nlp:
+
+    cmd: python src/modeling/train_nlp.py
+
+    deps:
+      - src/modeling/train_nlp.py
+      - data/processed/df_clean.csv
+
+    outs:
+      - models/nlp_model.pkl
+
+
+  train_multimodal:
+
+    cmd: python src/modeling/train_multimodal.py
+
+    deps:
+      - src/modeling/train_multimodal.py
+      - data/processed/df_clean.csv
+
+    outs:
+      - models/multimodal_model.pkl
+
+
+  monitoring:
+
+    cmd: |
+      python -m src.monitoring.monitoring
+      python -m src.monitoring.text_drift
+
+    deps:
+      - src/monitoring/monitoring.py
+      - src/monitoring/text_drift.py
+      - data/processed/df_clean.csv
+      - logs/current_data.csv
+      - logs/current_nlp.csv
+
+    outs:
+      - reports/report.html
+      - reports/evidently/drift_metrics.json
+      - reports/evidently/text_drift.json
