@@ -10,7 +10,6 @@ from src.api.numeric_api import router as numeric_router
 from src.monitoring.metrics import (
     API_STATUS,
     DATA_DRIFT_SCORE,
-    PREDICTIONS,
     TEXT_DRIFT_SCORE,
 )
 

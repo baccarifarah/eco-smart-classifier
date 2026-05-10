@@ -12,26 +12,16 @@ from sklearn.svm import LinearSVC
 
 
 def main():
-    # CONFIG
-
     mlflow.set_tracking_uri("sqlite:///mlflow.db")
     mlflow.set_experiment("EcoSmart_NLP")
 
-    # LOAD DATA
-
     df = pd.read_csv("src/data/df_clean.csv")
-
-    # COLUMNS
 
     TARGET = "Categorie"
     TEXT_COL = "Rapport_Collecte"
 
-    # FEATURES
-
     X = df[TEXT_COL]
     y = df[TARGET]
-
-    # SPLIT 70 / 15 / 15 (CORRECT CAHIER DES CHARGES)
 
     X_train, X_temp, y_train, y_temp = train_test_split(
         X, y, test_size=0.30, random_state=42, stratify=y
@@ -41,13 +31,6 @@ def main():
         X_temp, y_temp, test_size=0.50, random_state=42, stratify=y_temp
     )
 
-    print(" Split done")
-    print(f"Train: {X_train.shape}")
-    print(f"Validation: {X_val.shape}")
-    print(f"Test: {X_test.shape}")
-
-    # PIPELINE NLP
-
     pipeline = Pipeline(
         [
             ("tfidf", TfidfVectorizer(max_features=500, ngram_range=(1, 2))),
@@ -55,55 +38,30 @@ def main():
         ]
     )
 
-    # TRAINING + VALIDATION + TEST
-
     with mlflow.start_run(run_name="NLP_LinearSVC"):
 
-        # ================= TRAIN =================
         pipeline.fit(X_train, y_train)
 
-        # ================= VALIDATION =================
         y_val_pred = pipeline.predict(X_val)
-
         val_acc = accuracy_score(y_val, y_val_pred)
 
-        print(f"\n Validation Accuracy : {val_acc:.4f}")
-
-        # ================= TEST =================
         y_test_pred = pipeline.predict(X_test)
 
         acc = accuracy_score(y_test, y_test_pred)
-
-        prec = precision_score(y_test, y_test_pred, average="weighted", zero_division=0)
-        rec = recall_score(y_test, y_test_pred, average="weighted", zero_division=0)
-        f1 = f1_score(y_test, y_test_pred, average="weighted", zero_division=0)
-
-        # ================= RESULTS =================
-        print("\n========== RESULTS ==========")
-        print(f"Accuracy  : {acc:.4f}")
-        print(f"Precision : {prec:.4f}")
-        print(f"Recall    : {rec:.4f}")
-        print(f"F1-score  : {f1:.4f}")
-
-        # ================= MLFLOW =================
-        mlflow.log_param("model", "LinearSVC")
-        mlflow.log_param("vectorizer", "TFIDF")
-        mlflow.log_param("split", "70/15/15")
+        prec = precision_score(y_test, y_test_pred, average="weighted")
+        rec = recall_score(y_test, y_test_pred, average="weighted")
+        f1 = f1_score(y_test, y_test_pred, average="weighted")
 
         mlflow.log_metric("val_accuracy", val_acc)
         mlflow.log_metric("accuracy", acc)
         mlflow.log_metric("precision", prec)
         mlflow.log_metric("recall", rec)
-        mlflow.log_metric("f1_score", f1)
+        mlflow.log_metric("f1", f1)
 
-        mlflow.sklearn.log_model(pipeline, artifact_path="nlp_model")
+        mlflow.sklearn.log_model(pipeline, "nlp_model")
 
-        # ================= SAVE MODEL =================
         os.makedirs("models", exist_ok=True)
-
         joblib.dump(pipeline, "models/nlp_model.pkl")
-
-    print("\n NLP model saved successfully")
 
 
 if __name__ == "__main__":

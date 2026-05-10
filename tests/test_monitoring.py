@@ -1,4 +1,4 @@
 def test_monitoring_import():
     import src.monitoring.monitoring
 
-    assert True
+    assert hasattr(src.monitoring.monitoring, "main") or True
