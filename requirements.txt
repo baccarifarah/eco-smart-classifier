@@ -9,7 +9,7 @@ dvc
 pytest
 pytest-cov
 httpx
-evidently
+evidently==0.4.28
 prometheus_client
 scipy
 python-multipart
