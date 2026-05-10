@@ -1,7 +1,8 @@
-from fastapi import APIRouter
+import os
+
 import joblib
 import pandas as pd
-import os
+from fastapi import APIRouter
 
 router = APIRouter()
 
@@ -22,16 +23,13 @@ def predict_nlp(data: dict):
     # =====================
     os.makedirs("logs", exist_ok=True)
 
-    df_log = pd.DataFrame([{
-        "Rapport_Collecte": text,
-        "prediction": int(prediction[0])
-    }])
+    df_log = pd.DataFrame(
+        [{"Rapport_Collecte": text, "prediction": int(prediction[0])}]
+    )
 
     if os.path.exists(LOG_FILE):
         df_log.to_csv(LOG_FILE, mode="a", header=False, index=False)
     else:
         df_log.to_csv(LOG_FILE, index=False)
 
-    return {
-        "prediction": int(prediction[0])
-    }
+    return {"prediction": int(prediction[0])}

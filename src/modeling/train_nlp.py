@@ -1,21 +1,15 @@
 import os
+
 import joblib
 import mlflow
 import mlflow.sklearn
 import pandas as pd
-
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
-
-from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.svm import LinearSVC
 
-from sklearn.metrics import (
-    accuracy_score,
-    precision_score,
-    recall_score,
-    f1_score
-)
 
 def main():
     # CONFIG
@@ -23,11 +17,9 @@ def main():
     mlflow.set_tracking_uri("sqlite:///mlflow.db")
     mlflow.set_experiment("EcoSmart_NLP")
 
-
-    # LOAD DATA 
+    # LOAD DATA
 
     df = pd.read_csv("src/data/df_clean.csv")
-
 
     # COLUMNS
 
@@ -39,23 +31,14 @@ def main():
     X = df[TEXT_COL]
     y = df[TARGET]
 
-
     # SPLIT 70 / 15 / 15 (CORRECT CAHIER DES CHARGES)
 
     X_train, X_temp, y_train, y_temp = train_test_split(
-        X,
-        y,
-        test_size=0.30,
-        random_state=42,
-        stratify=y
+        X, y, test_size=0.30, random_state=42, stratify=y
     )
 
     X_val, X_test, y_val, y_test = train_test_split(
-        X_temp,
-        y_temp,
-        test_size=0.50,
-        random_state=42,
-        stratify=y_temp
+        X_temp, y_temp, test_size=0.50, random_state=42, stratify=y_temp
     )
 
     print(" Split done")
@@ -63,17 +46,14 @@ def main():
     print(f"Validation: {X_val.shape}")
     print(f"Test: {X_test.shape}")
 
-
     # PIPELINE NLP
 
-    pipeline = Pipeline([
-        ("tfidf", TfidfVectorizer(
-            max_features=500,
-            ngram_range=(1, 2)
-        )),
-        ("classifier", LinearSVC())
-    ])
-
+    pipeline = Pipeline(
+        [
+            ("tfidf", TfidfVectorizer(max_features=500, ngram_range=(1, 2))),
+            ("classifier", LinearSVC()),
+        ]
+    )
 
     # TRAINING + VALIDATION + TEST
 
@@ -116,20 +96,15 @@ def main():
         mlflow.log_metric("recall", rec)
         mlflow.log_metric("f1_score", f1)
 
-        mlflow.sklearn.log_model(
-            pipeline,
-            artifact_path="nlp_model"
-        )
+        mlflow.sklearn.log_model(pipeline, artifact_path="nlp_model")
 
         # ================= SAVE MODEL =================
         os.makedirs("models", exist_ok=True)
 
-        joblib.dump(
-            pipeline,
-            "models/nlp_model.pkl"
-        )
+        joblib.dump(pipeline, "models/nlp_model.pkl")
 
     print("\n NLP model saved successfully")
+
 
 if __name__ == "__main__":
     main()

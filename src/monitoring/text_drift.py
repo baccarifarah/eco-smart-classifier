@@ -1,9 +1,10 @@
-import pandas as pd
-import os
 import json
+import os
 
-from sklearn.feature_extraction.text import TfidfVectorizer
+import pandas as pd
 from scipy.spatial.distance import jensenshannon
+from sklearn.feature_extraction.text import TfidfVectorizer
+
 
 def main():
 
@@ -13,17 +14,15 @@ def main():
     # LOAD DATA
     # =====================
 
-    reference = pd.read_csv(
-        "data/processed/df_clean.csv"
-    )["Rapport_Collecte"].fillna("")
+    reference = pd.read_csv("data/processed/df_clean.csv")["Rapport_Collecte"].fillna(
+        ""
+    )
 
     current_path = "logs/current_nlp.csv"
 
     if os.path.exists(current_path):
 
-        current = pd.read_csv(
-            current_path
-        )["Rapport_Collecte"].fillna("")
+        current = pd.read_csv(current_path)["Rapport_Collecte"].fillna("")
 
     else:
 
@@ -33,17 +32,11 @@ def main():
     # VECTORIZE
     # =====================
 
-    vectorizer = TfidfVectorizer(
-        max_features=50
-    )
+    vectorizer = TfidfVectorizer(max_features=50)
 
-    ref_vec = vectorizer.fit_transform(
-        reference
-    ).toarray().mean(axis=0)
+    ref_vec = vectorizer.fit_transform(reference).toarray().mean(axis=0)
 
-    cur_vec = vectorizer.transform(
-        current
-    ).toarray().mean(axis=0)
+    cur_vec = vectorizer.transform(current).toarray().mean(axis=0)
 
     # =====================
     # DRIFT
@@ -59,32 +52,22 @@ def main():
 
         cur_vec = cur_vec / cur_vec.sum()
 
-        distance = jensenshannon(
-            ref_vec,
-            cur_vec
-        )
+        distance = jensenshannon(ref_vec, cur_vec)
 
     # =====================
     # SAVE JSON
     # =====================
 
-    os.makedirs(
-        "reports/evidently",
-        exist_ok=True
-    )
+    os.makedirs("reports/evidently", exist_ok=True)
 
-    with open(
-        "reports/evidently/text_drift.json",
-        "w"
-    ) as f:
+    with open("reports/evidently/text_drift.json", "w") as f:
 
-        json.dump({
-            "text_drift_score": float(distance)
-        }, f)
+        json.dump({"text_drift_score": float(distance)}, f)
 
     print(" Text Drift:", distance)
 
     print(" Text monitoring finished")
+
 
 if __name__ == "__main__":
     main()

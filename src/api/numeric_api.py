@@ -1,9 +1,10 @@
-from fastapi import APIRouter, HTTPException
+import json
+import os
+from datetime import datetime
+
 import joblib
 import pandas as pd
-import os
-import json
-from datetime import datetime
+from fastapi import APIRouter, HTTPException
 
 #  PROMETHEUS IMPORT UNIQUE
 from src.monitoring.metrics import PREDICTIONS
@@ -12,14 +13,7 @@ router = APIRouter()
 
 model = joblib.load("models/numeric_model.pkl")
 
-FEATURES = [
-    "Poids",
-    "Volume",
-    "Conductivite",
-    "Opacite",
-    "Rigidite",
-    "Source"
-]
+FEATURES = ["Poids", "Volume", "Conductivite", "Opacite", "Rigidite", "Source"]
 
 LOG_FILE_CSV = "logs/current_data.csv"
 LOG_FILE_JSON = "logs/predictions.json"
@@ -58,12 +52,10 @@ def predict_numeric(data: dict):
     log_entry = {
         "timestamp": str(datetime.now()),
         "features": data,
-        "prediction": int(prediction[0])
+        "prediction": int(prediction[0]),
     }
 
     with open(LOG_FILE_JSON, "a") as f:
         f.write(json.dumps(log_entry) + "\n")
 
-    return {
-        "prediction": int(prediction[0])
-    }
+    return {"prediction": int(prediction[0])}

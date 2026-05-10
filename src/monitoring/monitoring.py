@@ -1,9 +1,9 @@
-import pandas as pd
 import json
 import os
 
-from evidently.report import Report
+import pandas as pd
 from evidently.metric_preset import DataDriftPreset
+from evidently.report import Report
 
 print(" Numeric drift monitoring started")
 
@@ -11,26 +11,15 @@ print(" Numeric drift monitoring started")
 # FEATURES
 # =====================
 
-FEATURES = [
-    "Poids",
-    "Volume",
-    "Conductivite",
-    "Opacite",
-    "Rigidite",
-    "Source"
-]
+FEATURES = ["Poids", "Volume", "Conductivite", "Opacite", "Rigidite", "Source"]
 
 # =====================
 # LOAD DATA
 # =====================
 
-reference_data = pd.read_csv(
-    "data/processed/df_clean.csv"
-)
+reference_data = pd.read_csv("data/processed/df_clean.csv")
 
-current_data = pd.read_csv(
-    "logs/current_data.csv"
-)
+current_data = pd.read_csv("logs/current_data.csv")
 
 reference_data = reference_data[FEATURES]
 current_data = current_data[FEATURES]
@@ -47,27 +36,17 @@ current_data["Source"] = current_data["Source"].astype(str)
 # EVIDENTLY REPORT
 # =====================
 
-report = Report(
-    metrics=[DataDriftPreset()]
-)
+report = Report(metrics=[DataDriftPreset()])
 
-report.run(
-    reference_data=reference_data,
-    current_data=current_data
-)
+report.run(reference_data=reference_data, current_data=current_data)
 
 # =====================
 # SAVE HTML REPORT
 # =====================
 
-os.makedirs(
-    "reports",
-    exist_ok=True
-)
+os.makedirs("reports", exist_ok=True)
 
-report.save_html(
-    "reports/report.html"
-)
+report.save_html("reports/report.html")
 
 # =====================
 # EXTRACT DRIFT SCORE
@@ -87,19 +66,11 @@ except:
 # SAVE JSON
 # =====================
 
-os.makedirs(
-    "reports/evidently",
-    exist_ok=True
-)
+os.makedirs("reports/evidently", exist_ok=True)
 
-with open(
-    "reports/evidently/drift_metrics.json",
-    "w"
-) as f:
+with open("reports/evidently/drift_metrics.json", "w") as f:
 
-    json.dump({
-        "data_drift_score": float(drift_score)
-    }, f)
+    json.dump({"data_drift_score": float(drift_score)}, f)
 
 print(" Numeric Drift:", drift_score)
 

@@ -1,26 +1,18 @@
 import os
+
 import joblib
 import mlflow
 import mlflow.sklearn
 import pandas as pd
-
+from sklearn.compose import ColumnTransformer
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.impute import SimpleImputer
+from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
-from sklearn.compose import ColumnTransformer
-
-from sklearn.impute import SimpleImputer
 from sklearn.preprocessing import StandardScaler
 
-from sklearn.feature_extraction.text import TfidfVectorizer
-
-from sklearn.ensemble import RandomForestClassifier
-
-from sklearn.metrics import (
-    accuracy_score,
-    precision_score,
-    recall_score,
-    f1_score
-)
 
 def main():
     # CONFIG
@@ -28,11 +20,9 @@ def main():
     mlflow.set_tracking_uri("sqlite:///mlflow.db")
     mlflow.set_experiment("EcoSmart_Multimodal")
 
-
     # LOAD DATA
 
     df = pd.read_csv("src/data/df_clean.csv")
-
 
     # COLUMNS
 
@@ -46,7 +36,7 @@ def main():
         "Opacite",
         "Rigidite",
         "Prix_Revente",
-        "Source"
+        "Source",
     ]
 
     # FEATURES
@@ -57,59 +47,44 @@ def main():
     # SPLIT 70 / 15 / 15
 
     X_train, X_temp, y_train, y_temp = train_test_split(
-        X,
-        y,
-        test_size=0.30,
-        random_state=42,
-        stratify=y
+        X, y, test_size=0.30, random_state=42, stratify=y
     )
 
     X_val, X_test, y_val, y_test = train_test_split(
-        X_temp,
-        y_temp,
-        test_size=0.50,
-        random_state=42,
-        stratify=y_temp
+        X_temp, y_temp, test_size=0.50, random_state=42, stratify=y_temp
     )
 
     print(" Split done")
 
-
     # PREPROCESSOR
 
-    preprocessor = ColumnTransformer([
-
-        (
-            "text",
-            TfidfVectorizer(
-                max_features=500,
-                ngram_range=(1, 2)
+    preprocessor = ColumnTransformer(
+        [
+            ("text", TfidfVectorizer(max_features=500, ngram_range=(1, 2)), TEXT_COL),
+            (
+                "num",
+                Pipeline(
+                    [
+                        ("imputer", SimpleImputer(strategy="median")),
+                        ("scaler", StandardScaler(with_mean=False)),
+                    ]
+                ),
+                NUM_COLS,
             ),
-            TEXT_COL
-        ),
-
-        (
-            "num",
-            Pipeline([
-                ("imputer", SimpleImputer(strategy="median")),
-                ("scaler", StandardScaler(with_mean=False))
-            ]),
-            NUM_COLS
-        )
-    ])
-
+        ]
+    )
 
     # MODEL
 
-    pipeline = Pipeline([
-        ("preprocessor", preprocessor),
-        ("classifier", RandomForestClassifier(
-            n_estimators=100,
-            random_state=42,
-            n_jobs=-1
-        ))
-    ])
-
+    pipeline = Pipeline(
+        [
+            ("preprocessor", preprocessor),
+            (
+                "classifier",
+                RandomForestClassifier(n_estimators=100, random_state=42, n_jobs=-1),
+            ),
+        ]
+    )
 
     # TRAINING
 
@@ -150,20 +125,15 @@ def main():
         mlflow.log_metric("recall", rec)
         mlflow.log_metric("f1_score", f1)
 
-        mlflow.sklearn.log_model(
-            pipeline,
-            artifact_path="multimodal_model"
-        )
+        mlflow.sklearn.log_model(pipeline, artifact_path="multimodal_model")
 
         # ================= SAVE =================
         os.makedirs("models", exist_ok=True)
 
-        joblib.dump(
-            pipeline,
-            "models/multimodal_model.pkl"
-        )
+        joblib.dump(pipeline, "models/multimodal_model.pkl")
 
     print("\n Multimodal model saved successfully")
+
 
 if __name__ == "__main__":
     main()

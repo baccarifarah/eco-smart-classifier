@@ -1,6 +1,6 @@
-from fastapi import APIRouter
 import joblib
 import pandas as pd
+from fastapi import APIRouter
 
 router = APIRouter()
 
@@ -14,6 +14,4 @@ def predict_multimodal(data: dict):
 
     prediction = model.predict(df)
 
-    return {
-        "prediction": int(prediction[0])
-    }
+    return {"prediction": int(prediction[0])}

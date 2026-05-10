@@ -1,4 +1,5 @@
 from fastapi.testclient import TestClient
+
 from src.api.main import app
 
 client = TestClient(app)
@@ -16,7 +17,7 @@ def test_numeric_endpoint():
         "Conductivite": 0.1,
         "Opacite": 0.5,
         "Rigidite": 5,
-        "Source": 1
+        "Source": 1,
     }
 
     response = client.post("/predict/numeric/", json=payload)

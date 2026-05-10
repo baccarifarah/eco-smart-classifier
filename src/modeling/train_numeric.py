@@ -1,14 +1,15 @@
-import pandas as pd
+import os
+
+import joblib
 import mlflow
 import mlflow.sklearn
-import os
-import joblib
-
+import pandas as pd
+from sklearn.ensemble import GradientBoostingClassifier, RandomForestClassifier
+from sklearn.impute import SimpleImputer
+from sklearn.metrics import accuracy_score, f1_score
 from sklearn.model_selection import train_test_split
 from sklearn.pipeline import Pipeline
-from sklearn.impute import SimpleImputer
-from sklearn.ensemble import GradientBoostingClassifier, RandomForestClassifier
-from sklearn.metrics import accuracy_score, f1_score
+
 
 def main():
     # =========================
@@ -26,14 +27,7 @@ def main():
 
     TARGET = "Categorie"
 
-    NUM_COLS = [
-        "Poids",
-        "Volume",
-        "Conductivite",
-        "Opacite",
-        "Rigidite",
-        "Source"
-    ]
+    NUM_COLS = ["Poids", "Volume", "Conductivite", "Opacite", "Rigidite", "Source"]
 
     X = df[NUM_COLS]
     y = df[TARGET]
@@ -45,29 +39,28 @@ def main():
     # SPLIT 70/15/15
     # =========================
     X_train, X_temp, y_train, y_temp = train_test_split(
-        X, y,
-        test_size=0.30,
-        stratify=y,
-        random_state=RANDOM_STATE
+        X, y, test_size=0.30, stratify=y, random_state=RANDOM_STATE
     )
 
     X_val, X_test, y_val, y_test = train_test_split(
-        X_temp, y_temp,
-        test_size=0.50,
-        stratify=y_temp,
-        random_state=RANDOM_STATE
+        X_temp, y_temp, test_size=0.50, stratify=y_temp, random_state=RANDOM_STATE
     )
 
     # =========================
     # PIPELINE PROPRE (IMPORTANT FIX)
     # =========================
-    pipeline = Pipeline([
-        ("imputer", SimpleImputer(strategy="median")),
-        ("model", RandomForestClassifier(
-            n_estimators=200,
-            random_state=RANDOM_STATE,
-        ))
-    ])
+    pipeline = Pipeline(
+        [
+            ("imputer", SimpleImputer(strategy="median")),
+            (
+                "model",
+                RandomForestClassifier(
+                    n_estimators=200,
+                    random_state=RANDOM_STATE,
+                ),
+            ),
+        ]
+    )
 
     # =========================
     # TRAIN + MLflow
@@ -103,6 +96,7 @@ def main():
         mlflow.sklearn.log_model(pipeline, "model")
 
     print(" Numeric model trained correctly")
+
 
 if __name__ == "__main__":
     main()
