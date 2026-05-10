@@ -5,6 +5,7 @@ from datetime import datetime
 import joblib
 import pandas as pd
 from fastapi import APIRouter, HTTPException
+
 from src.monitoring.metrics import PREDICTIONS
 
 router = APIRouter()

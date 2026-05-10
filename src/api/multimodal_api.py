@@ -1,6 +1,7 @@
+import os
+
 import joblib
 import pandas as pd
-import os
 from fastapi import APIRouter
 
 router = APIRouter()
