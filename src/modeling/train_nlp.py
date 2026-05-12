@@ -107,7 +107,7 @@ def main():
 
         mlflow.sklearn.log_model(pipeline, "nlp_model")
 
-        # ======================================================
+
         # SAVE MODEL
 
         os.makedirs("models", exist_ok=True)

@@ -16,18 +16,14 @@ from src.monitoring.metrics import (
     TEXT_DRIFT_SCORE,
 )
 
-# =====================
 # APP INIT
-# =====================
 
 app = FastAPI(
     title="Eco-Smart Classifier API",
     version="1.0",
 )
 
-# =====================
 # CORS CONFIG (IMPORTANT FIX)
-# =====================
 
 app.add_middleware(
     CORSMiddleware,
@@ -59,7 +55,7 @@ API_STATUS.set(1)
 @app.get("/")
 def home():
     return {
-        "message": "Eco-Smart API running 🚀"
+        "message": "Eco-Smart API running "
     }
 
 # =====================

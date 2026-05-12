@@ -27,7 +27,7 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt
 
-      #  IMPORTANT: TRAIN MODELS BEFORE TESTS
+      # 🔥 IMPORTANT: TRAIN MODELS BEFORE TESTS
       - name: Train models
         run: |
           python src/modeling/train_numeric.py
