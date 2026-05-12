@@ -29,7 +29,6 @@ def main():
         "Conductivite",
         "Opacite",
         "Rigidite",
-        "Prix_Revente",
         "Source",
     ]
 
