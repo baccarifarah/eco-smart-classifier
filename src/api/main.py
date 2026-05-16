@@ -33,18 +33,15 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# =====================
 # ROUTES
-# =====================
 
 app.include_router(numeric_router, prefix="/predict/numeric")
 app.include_router(nlp_router, prefix="/predict/nlp")
 app.include_router(multi_router, prefix="/predict/multimodal")
 
 
-# =====================
+
 # API STATUS
-# =====================
 
 API_STATUS.set(1)
 

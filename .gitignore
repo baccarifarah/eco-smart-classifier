@@ -8,6 +8,4 @@ venv/
 logs/
 reports/
 
-models/*.pkl
-*.pkl
 *.joblib
