@@ -4,19 +4,20 @@ from datetime import datetime
 
 import joblib
 import pandas as pd
-from fastapi import APIRouter, HTTPException
+from fastapi import APIRouter, HTTPException, Path
 
 from src.monitoring.metrics import PREDICTIONS
 
 router = APIRouter()
 
-MODEL_PATH = "models/numeric_model.pkl"
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
+MODEL_PATH = BASE_DIR / "models" / "numeric_model.pkl"
 
 
 def get_model():
-    if not os.path.exists(MODEL_PATH):
+    if not MODEL_PATH.exists():
         return None
-    return joblib.load(MODEL_PATH)
+    return joblib.load(str(MODEL_PATH))
 
 
 FEATURES = ["Poids", "Volume", "Conductivite", "Opacite", "Rigidite", "Source"]

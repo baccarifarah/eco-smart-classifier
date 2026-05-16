@@ -2,17 +2,18 @@ import os
 
 import joblib
 import pandas as pd
-from fastapi import APIRouter
+from fastapi import APIRouter, Path
 
 router = APIRouter()
 
-MODEL_PATH = "models/nlp_model.pkl"
+BASE_DIR = Path(__file__).resolve().parent.parent.parent
+MODEL_PATH = BASE_DIR / "models" / "nlp_model.pkl"
 
 
 def get_model():
-    if not os.path.exists(MODEL_PATH):
+    if not MODEL_PATH.exists():
         return None
-    return joblib.load(MODEL_PATH)
+    return joblib.load(str(MODEL_PATH))
 
 
 LOG_FILE = "logs/current_nlp.csv"
