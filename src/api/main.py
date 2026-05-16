@@ -8,8 +8,6 @@ from prometheus_client import CONTENT_TYPE_LATEST, generate_latest
 from src.api.multimodal_api import router as multi_router
 from src.api.nlp_api import router as nlp_router
 from src.api.numeric_api import router as numeric_router
-
-
 from src.monitoring.metrics import (
     API_STATUS,
     DATA_DRIFT_SCORE,
