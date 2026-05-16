@@ -27,7 +27,7 @@ app = FastAPI(
 
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  
+    allow_origins=["*"],
     allow_credentials=True,
     allow_methods=["*"],
     allow_headers=["*"],
@@ -40,7 +40,6 @@ app.include_router(nlp_router, prefix="/predict/nlp")
 app.include_router(multi_router, prefix="/predict/multimodal")
 
 
-
 # API STATUS
 
 API_STATUS.set(1)
@@ -49,23 +48,26 @@ API_STATUS.set(1)
 # HOME
 # =====================
 
+
 @app.get("/")
 def home():
-    return {
-        "message": "Eco-Smart API running "
-    }
+    return {"message": "Eco-Smart API running "}
+
 
 # =====================
 # DEBUG ROUTES (OPTIONAL)
 # =====================
 
+
 @app.get("/routes")
 def routes():
     return [route.path for route in app.routes]
 
+
 # =====================
 # METRICS (PROMETHEUS + DRIFT)
 # =====================
+
 
 @app.get("/metrics")
 def metrics():
@@ -88,7 +90,4 @@ def metrics():
             data = json.load(f)
             TEXT_DRIFT_SCORE.set(data.get("text_drift_score", 0))
 
-    return Response(
-        generate_latest(),
-        media_type=CONTENT_TYPE_LATEST
-    )
+    return Response(generate_latest(), media_type=CONTENT_TYPE_LATEST)

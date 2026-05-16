@@ -10,6 +10,7 @@ from sklearn.pipeline import Pipeline, FeatureUnion
 from sklearn.svm import LinearSVC
 from sklearn.metrics import accuracy_score, f1_score, precision_score, recall_score
 
+
 def main():
 
     mlflow.set_tracking_uri("sqlite:///mlflow.db")
@@ -32,17 +33,11 @@ def main():
     # ==========================================================
 
     X_train, X_temp, y_train, y_temp = train_test_split(
-        X, y,
-        test_size=0.30,
-        random_state=42,
-        stratify=y
+        X, y, test_size=0.30, random_state=42, stratify=y
     )
 
     X_val, X_test, y_val, y_test = train_test_split(
-        X_temp, y_temp,
-        test_size=0.50,
-        random_state=42,
-        stratify=y_temp
+        X_temp, y_temp, test_size=0.50, random_state=42, stratify=y_temp
     )
 
     # ==========================================================
@@ -50,22 +45,14 @@ def main():
     # ==========================================================
 
     word_tfidf = TfidfVectorizer(
-        ngram_range=(1, 2),
-        max_features=5000,
-        min_df=2,
-        sublinear_tf=True
+        ngram_range=(1, 2), max_features=5000, min_df=2, sublinear_tf=True
     )
 
     char_tfidf = TfidfVectorizer(
-        analyzer="char_wb",
-        ngram_range=(3, 5),
-        max_features=3000
+        analyzer="char_wb", ngram_range=(3, 5), max_features=3000
     )
 
-    vectorizer = FeatureUnion([
-        ("word", word_tfidf),
-        ("char", char_tfidf)
-    ])
+    vectorizer = FeatureUnion([("word", word_tfidf), ("char", char_tfidf)])
 
     # ==========================================================
     # MODEL
@@ -73,10 +60,7 @@ def main():
 
     model = LinearSVC()
 
-    pipeline = Pipeline([
-        ("vectorizer", vectorizer),
-        ("classifier", model)
-    ])
+    pipeline = Pipeline([("vectorizer", vectorizer), ("classifier", model)])
 
     # ==========================================================
     # TRAIN + EVALUATION
@@ -106,7 +90,6 @@ def main():
         mlflow.log_metric("f1", f1)
 
         mlflow.sklearn.log_model(pipeline, "nlp_model")
-
 
         # SAVE MODEL
 
