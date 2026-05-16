@@ -231,3 +231,10 @@ reports/evidently/drift_metrics.json
 - CamemBERT
 - Joblib
 
+---
+
+# Auteur
+
+Farah Baccari
+
+Projet réalisé dans le cadre du module MLOps et Machine Learning.
